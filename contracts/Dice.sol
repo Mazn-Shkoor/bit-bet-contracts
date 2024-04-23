@@ -62,7 +62,7 @@ contract Dice {
         // return betResult;
     }
 
-    function generateRandomNumber(string memory clientSeed) private view returns (uint256) {
+    function generateRandomNumber(string memory clientSeed) private returns (uint256) {
 
         string memory serverSeed = generateServerSeed();
         // Combine seeds
@@ -81,7 +81,7 @@ contract Dice {
         // Generate random number between 1 and 100
         uint256 randomNumber = (hashInt % 100);
 
-        // emit RandomNumber(clientSeed, serverSeed, combinedSeed, hash, firstTenHash, hashInt, randomNumber);
+        emit RandomNumber(clientSeed, serverSeed, combinedSeed, hash, firstTenHash, hashInt, randomNumber);
 
         return randomNumber;
     }
