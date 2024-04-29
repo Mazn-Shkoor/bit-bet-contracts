@@ -9,8 +9,7 @@ contract Dice {
 
     event BetPlaced(address indexed player, uint256 amount, uint256 target, BetDirection betDirection, uint256 multiplier, uint256 payout, uint256 randomNumber, bool result);
 
-    // event RandomNumber(string clientSeedStr, bytes32 clientSeedSha256,  bytes32 serverSeedSha256, bytes32 combinedSeedSha256, uint256 randomNumber);
-    event RandomNumber(string clientSeed, string serverSeed, string combinedSeed,  bytes32 hashSeed, bytes5 firstTenHash, uint256 firstTenHashInt, uint256 randomNumber);
+    event RandomNumber(string clientSeed, string serverSeed, string combinedSeed,  bytes32 indexed hashSeed, bytes5 firstTenHash, uint256 firstTenHashInt, uint256 randomNumber);
 
 
     constructor() {
@@ -50,16 +49,6 @@ contract Dice {
 
         emit BetPlaced(msg.sender, betAmount, target, betDirection, multiplierValue, payout, randomNumber, playerWon);
 
-        // uint256[] memory betResult = new uint256[](2);
-        // betResult[1] = randomNumber;
-
-        // if(playerWon){
-        //     betResult[2] = 1;
-        // }else{
-        //     betResult[2] = 0;
-        // }
-
-        // return betResult;
     }
 
     function generateRandomNumber(string memory clientSeed) private returns (uint256) {
