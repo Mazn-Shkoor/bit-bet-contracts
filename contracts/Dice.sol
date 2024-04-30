@@ -9,7 +9,7 @@ contract Dice {
 
     event BetPlaced(address indexed player, uint256 amount, uint256 target, BetDirection betDirection, uint256 multiplier, uint256 payout, uint256 randomNumber, bool result);
 
-    event RandomNumber(string clientSeed, string serverSeed, string combinedSeed,  bytes32 indexed hashSeed, bytes5 firstTenHash, uint256 firstTenHashInt, uint256 randomNumber);
+    event RandomNumber(string clientSeed, string serverSeed, string combinedSeed,  bytes32 indexed   hashSeed, bytes5 firstTenHash, uint256 firstTenHashInt, uint256 randomNumber);
 
 
     constructor() {
