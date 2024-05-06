@@ -17,7 +17,7 @@ async function main() {
     // const randomNumber = await contract.generateRandomNumber();
     // console.log("Random Number : ", randomNumber);
 
-    const target = 30;
+    const target = 3;
     const betDirection = 1;
     const amountToSend = ethers.parseEther("0.1");
 
@@ -42,11 +42,11 @@ async function main() {
         DEPLOYED_CONTRACT_ADDRESS
       );
 
-      const filter = myContract.filters.BetPlaced();
+      const filterBetPlaced = myContract.filters.BetPlaced();
       const filterRandomNumber = myContract.filters.RandomNumber();
 
       // Subscribe to the event
-      myContract.on(filter, (eventData) => {
+      myContract.on(filterBetPlaced, (eventData) => {
         const args = eventData.args;
 
         const player = args[0];
@@ -107,9 +107,8 @@ async function main() {
     }
 
     // try {
-    //   const amountInWei = ethers.parseEther("0.6"); // Withdraw 1 ETH, specify amount in Ether
+    //   const amountInWei = ethers.parseEther("0.8"); // Withdraw 1 ETH, specify amount in Ether
     //   const transaction = await contract.withdrawHouseFunds(amountInWei);
-    //   // const withdraw = await contract.withdrawHouseFunds(1000000000000000000);
     //   console.log(transaction.hash);
     // } catch (error) {
     //   console.log(error.message);
