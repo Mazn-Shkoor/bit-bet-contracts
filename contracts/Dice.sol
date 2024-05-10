@@ -2,8 +2,11 @@
 pragma solidity ^0.8.19;
 import "hardhat/console.sol";
 
-contract Dice {
-    address public owner;
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract Dice is Ownable {
+    address public tokenAddress;
 
     enum BetDirection {RollOver, RollUnder}
 
@@ -11,24 +14,29 @@ contract Dice {
 
     event RandomNumber(string clientSeed, string serverSeed, string combinedSeed,  bytes32 indexed   hashSeed, bytes5 firstTenHash, uint256 firstTenHashInt, uint256 randomNumber);
 
+    event TokenChanged(address indexed oldToken, address indexed newToken);
 
-    constructor() {
-        owner = msg.sender;
-    }
-
-    // Fallback function to handle failed transfers
-    fallback() external {
-        // Handle failed transfers here
-        // You can emit an event or revert with an error message
-        revert("Fallback function: Transfer failed");
+    constructor(address _tokenAddress) Ownable(msg.sender){
+        tokenAddress = _tokenAddress;
     }
 
 
-    function bet(uint256 target, BetDirection betDirection, string memory clientSeed) external payable {
+    function bet(uint256 target, BetDirection betDirection, string memory clientSeed, uint256 betAmount) external {
 
+        require(tokenAddress != address(0), "Accepted token not set");
         require(target >= 0 && target <= 100, "Invalid target number");
 
-        uint256 betAmount = msg.value;
+        IERC20 token = IERC20(tokenAddress);
+        
+        // Require that the sender has sufficient tokens
+        require(token.balanceOf(msg.sender) >= betAmount, "Insufficient tokens");
+        
+        // Require that the sender has approved sufficient tokens
+        require(token.allowance(msg.sender, address(this)) >= betAmount, "Insufficient allowance");
+
+        // Transfer the bet amount from the sender to this contract
+        require(token.transferFrom(msg.sender, address(this), betAmount), "Transfer failed");
+
 
         uint256 randomNumber = generateRandomNumber(clientSeed);
 
@@ -40,11 +48,8 @@ contract Dice {
 
         if (playerWon) {
             require(payout <= getHouseFunds(), "Contract balance is insufficient.");
-            // payable(msg.sender).transfer(payout);
-
-            // Attempt transfer, fallback function will handle failures
-            (bool success, ) = payable(msg.sender).call{value: payout}("");
-            require(success, "Transfer failed");
+            
+            require(token.transfer(msg.sender, payout), "Transfer failed");
         }
 
         emit BetPlaced(msg.sender, betAmount, target, betDirection, multiplierValue, payout, randomNumber, playerWon);
@@ -102,16 +107,18 @@ contract Dice {
         }
 
 
-    // Function to allow the owner to withdraw house funds
-    function withdrawHouseFunds(uint256 amount) external {
-        require(msg.sender == owner, "Only owner can withdraw house funds");
+    function withdrawHouseFunds(uint256 amount) external onlyOwner {
         require(amount <= getHouseFunds(), "Not enough funds available");
-        payable(owner).transfer(amount);
+
+        // If token address is set, transfer tokens
+        IERC20 token = IERC20(tokenAddress);
+        require(token.transfer(owner(), amount), "Token transfer failed");
     }
 
 
     function getHouseFunds() public view returns (uint256) {
-        return uint(address(this).balance);
+        IERC20 token = IERC20(tokenAddress);
+        return token.balanceOf(address(this));
     }
 
     function getMultiplier(uint256 target, BetDirection betDirection) private pure returns (uint256) {

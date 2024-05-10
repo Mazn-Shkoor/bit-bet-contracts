@@ -12,10 +12,12 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.0.5",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "ethers": "^6.11.1",
+    "ethers": "^6.12.1",
     "hardhat": "^2.22.2"
   },
   "dependencies": {
-    "dotenv": "^16.4.5"
+    "@openzeppelin/contracts": "^5.0.2",
+    "dotenv": "^16.4.5",
+    "web3": "^4.8.0"
   }
 }
