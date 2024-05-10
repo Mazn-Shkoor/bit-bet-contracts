@@ -29,4 +29,12 @@ module.exports = {
       accounts: [SEPOLIA_PRIVATE_KEY],
     },
   },
+
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
+  },
+
+  sourcify: {
+    enabled: true,
+  },
 };
