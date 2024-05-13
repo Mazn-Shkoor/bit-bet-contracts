@@ -29,8 +29,8 @@ async function main() {
     const contract = await Dice.attach(DEPLOYED_CONTRACT_ADDRESS);
 
     const target = 50;
-    const betDirection = 0;
-    const amountToSend = ethers.parseUnits("5", 18); // Amount of tokens to send
+    const betDirection = 1;
+    const amountToSend = ethers.parseUnits("10", 18); // Amount of tokens to send
 
     console.log("Sending: ", amountToSend);
 
@@ -60,21 +60,6 @@ async function main() {
 
       console.log("House funds: ", getHouseFunds);
 
-      // Approve the smart contract to spend tokens on behalf of the sender
-      const approveTx = await tokenContract.approve(
-        DEPLOYED_CONTRACT_ADDRESS,
-        amountToSend
-      );
-      await approveTx.wait();
-
-      // Call the bet function of the smart contract
-      const betTx = await contract.bet(
-        target,
-        betDirection,
-        clientSeed,
-        amountToSend
-      );
-
       // get deployed contract
       const myContract = await ethers.getContractAt(
         Dice.interface,
@@ -88,6 +73,7 @@ async function main() {
       myContract.on(filterBetPlaced, (eventData) => {
         const args = eventData.args;
 
+        // console.log("worked");
         const player = args[0];
         const amount = args[1];
         const target = args[2];
@@ -134,8 +120,23 @@ async function main() {
         console.log("Random Number:", randomNumber);
       });
 
+      // Approve the smart contract to spend tokens on behalf of the sender
+      const approveTx = await tokenContract.approve(
+        DEPLOYED_CONTRACT_ADDRESS,
+        amountToSend
+      );
+      await approveTx.wait();
+
+      // Call the bet function of the smart contract
+      const betTx = await contract.bet(
+        target,
+        betDirection,
+        clientSeed,
+        amountToSend
+      );
+
       // Wait for the event
-      await new Promise((resolve) => setTimeout(resolve, 30000)); // Wait for half a minute
+      await new Promise((resolve) => setTimeout(resolve, 10000)); // Wait for few seconds before ending the subscripion
 
       // Unsubscribe from the event
       myContract.removeAllListeners();

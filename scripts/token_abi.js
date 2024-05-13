@@ -813,5 +813,4 @@ let token_abi = [
     type: "function",
   },
 ];
-
 module.exports = token_abi;
